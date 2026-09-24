@@ -1,0 +1,804 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لوحة تحكم نظمية | عالم الخوارزميات</title>
+    <link rel="stylesheet" href="new.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+
+<body>
+    <div id="welcome">
+        <h2>بَين التَرتيب وَهانوي ..رِحلة أناقَة يَقودها ذَكاء نظمية </h2>
+        <h3>بإشراف المُهندسة : فاتِن نعمـة </h3>
+    </div>
+    <div id="one">
+        <div class="menu">
+            <ul>
+                <li class="profile">
+                    <div class="img-pro">
+                        <img src="logo.png" alt="profile">
+                    </div>
+                    <h2>إتْقان || الخوارزميّات</h2>
+                </li>
+                <li data-algo-type="home">
+                    <a href="#" class="active">
+                        <i class="fas fa-terminal"></i>
+                        <p>Home</p>
+                    </a>
+                </li>
+                <li data-algo-type="sorting">
+                    <a href="#">
+                        <i class="fas fa-sort-amount-down"></i>
+                        <p>Ranking algorithms</p>
+                    </a>
+                </li>
+                <li data-algo-type="search">
+                    <a href="#">
+                        <i class="fas fa-search"></i>
+                        <p>Search algorithms</p>
+                    </a>
+                </li>
+                <li data-algo-type="insertdelete">
+                    <a href="#">
+                        <i class="fas fa-plus-circle"></i>
+                        <p>Addition and deletion</p>
+                    </a>
+                </li>
+                <li data-algo-type="hanoi">
+                    <a href="#">
+                        <i class="fas fa-tower-cell"></i>
+                        <p>Hanoi Towers</p>
+                    </a>
+                </li>
+                <li class="log-out">
+                    <a href="#" id="logoutBtn">
+                        <i class="fas fa-sign-out-alt"></i>
+                        <p>Log out</p>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <div class="contant">
+            <div class="data-info">
+                <div class="box">
+                    <i class="fas fa-arrow-down-wide-short"></i>
+                    <div class="data">
+                        <p>تعقيد الترتيب (أسوأ حالة)</p>
+                        <span>O(n²)</span>
+                    </div>
+                </div>
+                <div class="box">
+                    <i class="fas fa-magnifying-glass"></i>
+                    <div class="data">
+                        <p>تعقيد البحث (ثنائي)</p>
+                        <span>O(log n)</span>
+                    </div>
+                </div>
+                <div class="box">
+                    <i class="fas fa-tower-cell"></i>
+                    <div class="data">
+                        <p>تعقيد هانوي</p>
+                        <span>O(2ⁿ)</span>
+                    </div>
+                </div>
+                <div class="box">
+                    <i class="fas fa-divide"></i>
+                    <div class="data">
+                        <p>تعقيد GCD</p>
+                        <span>O(log n)</span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="performanceMatrixSection">
+                <div class="title-info">
+                    <p>Performance Matrix</p>
+                    <i class="fas fa-table"></i>
+                </div>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Algorithm</th>
+                            <th>Time Complexity</th>
+                            <th>Space Complexity</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Binary Search</td>
+                            <td>O(log n)</td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>Quick Sort</td>
+                            <td>O(n log n)</td>
+                            <td>O(log n)</td>
+                        </tr>
+                        <tr>
+                            <td>Merge Sort</td>
+                            <td>O(n log n)</td>
+                            <td>O(n)</td>
+                        </tr>
+                        <tr>
+                            <td>Bubble Sort</td>
+                            <td>O(n²)</td>
+                            <td>O(1)</td>
+                        </tr>
+                        <tr>
+                            <td>Hanoi Towers</td>
+                            <td>O(2ⁿ)</td>
+                            <td>O(2ⁿ)</td>
+                        </tr>
+                        <tr>
+                            <td>Linear Search</td>
+                            <td>O(n)</td>
+                            <td>O(1)</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div id="algorithmEnvironment" style="display: none;">
+                <div id="dynamicContent"></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        setTimeout(function () {
+            document.getElementById("welcome").style.display = "none";
+            document.getElementById("one").style.display = "block";
+        }, 5000);
+        // افتحي نافذة جديدة وخزنيها بمتحول
+        function showStopMessage() {
+            document.body.innerHTML = `
+      <div style="height:100vh;display:flex;justify-content:center;align-items:center;background: linear-gradient(135deg, #164863, #427D9D, #9BBEC8, #DDF2FD);font-family:Cairo;font-size:18px; font-weight: 600;">
+       🚫 Project stopped – Click Refresh
+      </div>
+    `;
+        }
+        let currentArray = [24, 56, 3, 89, 17, 42];
+        let currentChart = null;
+        let isSorting = false;
+        let sortSpeed = 300;
+
+        function sleep(ms) {
+            return new Promise(resolve => setTimeout(resolve, ms));
+        }
+
+        function renderArray(highlightIndices = [], swapIndices = []) {
+            const container = document.getElementById('arrayDisplay');
+            if (!container) return;
+            container.innerHTML = currentArray.map((val, i) => {
+                let extraClass = '';
+                if (swapIndices.includes(i)) extraClass = 'swapping';
+                else if (highlightIndices.includes(i)) extraClass = 'comparing';
+                return `
+                    <div class="array-element ${extraClass}" data-index="${i}">
+                        <span>${val}</span>
+                        <span>${i + 1}</span>
+                    </div>
+                `;
+            }).join('');
+            const countSpan = document.getElementById('arrayCount');
+            if (countSpan) countSpan.innerText = currentArray.length;
+        }
+
+        function showResult(message) {
+            const resultDiv = document.getElementById('resultArea');
+            if (resultDiv) {
+                resultDiv.innerHTML = `<i class="fas fa-chart-line"></i> ${message}`;
+            }
+        }
+
+        function updateChart(complexities, labels) {
+            const ctx = document.getElementById('complexityChart');
+            if (!ctx) return;
+            if (currentChart) currentChart.destroy();
+            currentChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'مستوى التعقيد (كلما قل أفضل)',
+                        data: complexities,
+                        backgroundColor: '#64FFDA80',
+                        borderColor: '#64FFDA',
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: { legend: { labels: { color: '#fff' } } }
+                }
+            });
+        }
+
+        function disableSortButtons(disabled) {
+            const btns = document.querySelectorAll('.algo-btn');
+            btns.forEach(btn => {
+                if (disabled) btn.setAttribute('disabled', 'disabled');
+                else btn.removeAttribute('disabled');
+            });
+        }
+
+
+        async function bubbleSortVisual() {
+            if (isSorting) { showResult("⚠️ يرجى الانتظار حتى انتهاء الترتيب الحالي"); return; }
+            isSorting = true;
+            disableSortButtons(true);
+            let arr = [...currentArray];
+            let steps = 0;
+
+            for (let i = 0; i < arr.length - 1; i++) {
+                let swapped = false;
+                for (let j = 0; j < arr.length - i - 1; j++) {
+                    renderArray([j, j + 1], []);
+                    await sleep(sortSpeed);
+
+                    steps++;
+                    if (arr[j] > arr[j + 1]) {
+                        renderArray([], [j, j + 1]);
+                        await sleep(sortSpeed / 2);
+                        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+                        currentArray = [...arr];
+                        renderArray([], []);
+                        await sleep(sortSpeed / 2);
+                        swapped = true;
+                    }
+                }
+                if (!swapped) break;
+            }
+
+            for (let i = 0; i < arr.length; i++) {
+                const elements = document.querySelectorAll('.array-element');
+                if (elements[i]) elements[i].classList.add('sorted');
+                await sleep(80);
+            }
+            await sleep(200);
+            renderArray([], []);
+            currentArray = arr;
+            showResult(`✅ Bubble Sort: [${arr.join(', ')}] | عدد الخطوات: ${steps} | التعقيد: O(n²)`);
+            isSorting = false;
+            disableSortButtons(false);
+        }
+
+        async function quickSortVisual() {
+            if (isSorting) { showResult("⚠️ يرجى الانتظار"); return; }
+            isSorting = true;
+            disableSortButtons(true);
+            let arr = [...currentArray];
+            let steps = 0;
+
+            async function partition(l, r) {
+                let pivot = arr[r];
+                let i = l - 1;
+                renderArray([r], []);
+                await sleep(sortSpeed);
+
+                for (let j = l; j < r; j++) {
+                    renderArray([j, r], []);
+                    await sleep(sortSpeed);
+                    steps++;
+                    if (arr[j] <= pivot) {
+                        i++;
+                        [arr[i], arr[j]] = [arr[j], arr[i]];
+                        currentArray = [...arr];
+                        renderArray([], [i, j]);
+                        await sleep(sortSpeed / 2);
+                    }
+                }
+                [arr[i + 1], arr[r]] = [arr[r], arr[i + 1]];
+                currentArray = [...arr];
+                renderArray([], [i + 1, r]);
+                await sleep(sortSpeed / 2);
+                return i + 1;
+            }
+
+            async function quickSortRec(l, r) {
+                if (l < r) {
+                    let pi = await partition(l, r);
+                    await quickSortRec(l, pi - 1);
+                    await quickSortRec(pi + 1, r);
+                }
+            }
+
+            await quickSortRec(0, arr.length - 1);
+
+            for (let i = 0; i < arr.length; i++) {
+                const elements = document.querySelectorAll('.array-element');
+                if (elements[i]) elements[i].classList.add('sorted');
+                await sleep(80);
+            }
+            await sleep(200);
+            currentArray = arr;
+            renderArray([], []);
+            showResult(`✅ Quick Sort: [${arr.join(', ')}] | عدد الخطوات: ${steps} | التعقيد: O(n log n)`);
+            isSorting = false;
+            disableSortButtons(false);
+        }
+
+        async function mergeSortVisual() {
+            if (isSorting) { showResult("⚠️ يرجى الانتظار"); return; }
+            isSorting = true;
+            disableSortButtons(true);
+            let arr = [...currentArray];
+            let steps = 0;
+
+            async function merge(l, m, r) {
+                let left = arr.slice(l, m + 1);
+                let right = arr.slice(m + 1, r + 1);
+                let i = 0, j = 0, k = l;
+
+                while (i < left.length && j < right.length) {
+                    renderArray([l + i, m + 1 + j], []);
+                    await sleep(sortSpeed);
+                    steps++;
+                    if (left[i] <= right[j]) {
+                        arr[k] = left[i];
+                        i++;
+                    } else {
+                        arr[k] = right[j];
+                        j++;
+                    }
+                    currentArray = [...arr];
+                    renderArray([], [k]);
+                    await sleep(sortSpeed / 2);
+                    k++;
+                }
+
+                while (i < left.length) {
+                    arr[k] = left[i];
+                    currentArray = [...arr];
+                    renderArray([], [k]);
+                    await sleep(sortSpeed / 2);
+                    i++;
+                    k++;
+                }
+
+                while (j < right.length) {
+                    arr[k] = right[j];
+                    currentArray = [...arr];
+                    renderArray([], [k]);
+                    await sleep(sortSpeed / 2);
+                    j++;
+                    k++;
+                }
+            }
+
+            async function mergeSortRec(l, r) {
+                if (l < r) {
+                    let m = Math.floor((l + r) / 2);
+                    await mergeSortRec(l, m);
+                    await mergeSortRec(m + 1, r);
+                    await merge(l, m, r);
+                }
+            }
+
+            await mergeSortRec(0, arr.length - 1);
+
+            for (let i = 0; i < arr.length; i++) {
+                const elements = document.querySelectorAll('.array-element');
+                if (elements[i]) elements[i].classList.add('sorted');
+                await sleep(80);
+            }
+            await sleep(200);
+            currentArray = arr;
+            renderArray([], []);
+            showResult(`✅ Merge Sort: [${arr.join(', ')}] | عدد الخطوات: ${steps} | التعقيد: O(n log n)`);
+            isSorting = false;
+            disableSortButtons(false);
+        }
+
+        async function selectionSortVisual() {
+            if (isSorting) { showResult("⚠️ يرجى الانتظار"); return; }
+            isSorting = true;
+            disableSortButtons(true);
+            let arr = [...currentArray];
+            let steps = 0;
+
+            for (let i = 0; i < arr.length - 1; i++) {
+                let minIdx = i;
+                renderArray([i], []);
+                await sleep(sortSpeed);
+
+                for (let j = i + 1; j < arr.length; j++) {
+                    renderArray([minIdx, j], []);
+                    await sleep(sortSpeed);
+                    steps++;
+                    if (arr[j] < arr[minIdx]) {
+                        minIdx = j;
+                        renderArray([minIdx], []);
+                        await sleep(sortSpeed / 2);
+                    }
+                }
+
+                if (minIdx !== i) {
+                    renderArray([], [i, minIdx]);
+                    await sleep(sortSpeed / 2);
+                    [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+                    currentArray = [...arr];
+                    renderArray([], []);
+                    await sleep(sortSpeed / 2);
+                }
+            }
+
+            for (let i = 0; i < arr.length; i++) {
+                const elements = document.querySelectorAll('.array-element');
+                if (elements[i]) elements[i].classList.add('sorted');
+                await sleep(80);
+            }
+            await sleep(200);
+            currentArray = arr;
+            renderArray([], []);
+            showResult(`✅ Selection Sort: [${arr.join(', ')}] | عدد الخطوات: ${steps} | التعقيد: O(n²)`);
+            isSorting = false;
+            disableSortButtons(false);
+        }
+
+        async function insertionSortVisual() {
+            if (isSorting) { showResult("⚠️ يرجى الانتظار"); return; }
+            isSorting = true;
+            disableSortButtons(true);
+            let arr = [...currentArray];
+            let steps = 0;
+
+            for (let i = 1; i < arr.length; i++) {
+                let key = arr[i];
+                let j = i - 1;
+                renderArray([i], []);
+                await sleep(sortSpeed);
+
+                while (j >= 0 && arr[j] > key) {
+                    renderArray([j, j + 1], []);
+                    await sleep(sortSpeed);
+                    steps++;
+                    arr[j + 1] = arr[j];
+                    currentArray = [...arr];
+                    renderArray([], [j + 1]);
+                    await sleep(sortSpeed / 2);
+                    j--;
+                }
+                arr[j + 1] = key;
+                currentArray = [...arr];
+                renderArray([], [j + 1]);
+                await sleep(sortSpeed / 2);
+            }
+
+            for (let i = 0; i < arr.length; i++) {
+                const elements = document.querySelectorAll('.array-element');
+                if (elements[i]) elements[i].classList.add('sorted');
+                await sleep(80);
+            }
+            await sleep(200);
+            currentArray = arr;
+            renderArray([], []);
+            showResult(`✅ Insertion Sort: [${arr.join(', ')}] | عدد الخطوات: ${steps} | التعقيد: O(n²)`);
+            isSorting = false;
+            disableSortButtons(false);
+        }
+
+        function showSortingContent() {
+            return `
+                <div class="title-info"><p>📊 خوارزميات الترتيب المرئية</p><i class="fas fa-sort-amount-down"></i></div>
+                <div class="algo-environment">
+                    <div class="array-container">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px; flex-wrap:wrap; gap:10px;">
+                            <span><i class="fas fa-list-ul"></i> العناصر: <span id="arrayCount" style="color:#64FFDA;">${currentArray.length}</span></span>
+                            <div class="sort-speed-control">
+                                <label>⚡ سرعة الترتيب:</label>
+                                <input type="range" id="sortSpeedRange" min="50" max="500" value="300">
+                                <span id="speedValue" style="color:#64FFDA;">متوسطة</span>
+                            </div>
+                        </div>
+                        <div id="arrayDisplay" class="array-display"></div>
+                        <div class="array-input-group">
+                            <input type="text" id="arrayInput" placeholder="أدخل أرقامًا مفصولة بفاصلة (مثال: 5,2,8,1,9)">
+                            <button id="updateArrayBtn">تحديث المصفوفة</button>
+                            <button id="randomArrayBtn">مصفوفة عشوائية</button>
+                        </div>
+                    </div>
+                    <div class="algo-buttons">
+                        <button class="algo-btn" onclick="bubbleSortVisual()">🧼 Bubble Sort <span style="font-size:10px;">O(n²)</span></button>
+                        <button class="algo-btn" onclick="quickSortVisual()">⚡ Quick Sort <span style="font-size:10px;">O(n log n)</span></button>
+                        <button class="algo-btn" onclick="mergeSortVisual()">🔄 Merge Sort <span style="font-size:10px;">O(n log n)</span></button>
+                        <button class="algo-btn" onclick="selectionSortVisual()">🎯 Selection Sort <span style="font-size:10px;">O(n²)</span></button>
+                        <button class="algo-btn" onclick="insertionSortVisual()">📌 Insertion Sort <span style="font-size:10px;">O(n²)</span></button>
+                    </div>
+                    <div id="resultArea" class="result-area"><i class="fas fa-info-circle"></i> اضغط على أي خوارزمية لمشاهدة الترتيب مع حركة العناصر</div>
+                    <div class="chart-container"><canvas id="complexityChart"></canvas></div>
+                </div>
+            `;
+        }
+
+        function linearSearch() {
+            let target = parseInt(prompt("🔍 أدخل الرقم الذي تريد البحث عنه:"));
+            if (isNaN(target)) { showResult("الرجاء إدخال رقم صحيح"); return; }
+            let steps = 0, found = false, index = -1;
+            for (let i = 0; i < currentArray.length; i++) {
+                steps++;
+                if (currentArray[i] === target) { found = true; index = i; break; }
+            }
+            if (found) showResult(`✅ Linear Search: تم العثور على ${target} في index ${index} | الخطوات: ${steps} | التعقيد: O(n)`);
+            else showResult(`❌ Linear Search: لم يتم العثور على ${target} | الخطوات: ${steps} | التعقيد: O(n)`);
+        }
+
+        function binarySearch() {
+            let target = parseInt(prompt("🔍 أدخل الرقم الذي تريد البحث عنه:"));
+            if (isNaN(target)) { showResult("الرجاء إدخال رقم صحيح"); return; }
+            let sortedArray = [...currentArray].sort((a, b) => a - b);
+            let steps = 0, left = 0, right = sortedArray.length - 1, found = false;
+            while (left <= right) {
+                steps++;
+                let mid = Math.floor((left + right) / 2);
+                if (sortedArray[mid] === target) { found = true; break; }
+                else if (sortedArray[mid] < target) left = mid + 1;
+                else right = mid - 1;
+            }
+            if (found) showResult(`✅ Binary Search: تم العثور على ${target} (بعد الترتيب) | الخطوات: ${steps} | التعقيد: O(log n)`);
+            else showResult(`❌ Binary Search: لم يتم العثور على ${target} | الخطوات: ${steps} | التعقيد: O(log n)`);
+        }
+
+        function showSearchContent() {
+            return `
+                <div class="title-info"><p>🔍 خوارزميات البحث</p><i class="fas fa-search"></i></div>
+                <div class="algo-environment">
+                    <div class="array-container">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                            <span><i class="fas fa-list-ul"></i> العناصر: <span id="arrayCount" style="color:#64FFDA;">${currentArray.length}</span></span>
+                        </div>
+                        <div id="arrayDisplay" class="array-display"></div>
+                        <div class="array-input-group">
+                            <input type="text" id="arrayInput" placeholder="أدخل أرقامًا مفصولة بفاصلة">
+                            <button id="updateArrayBtn">تحديث</button>
+                            <button id="randomArrayBtn">عشوائي</button>
+                        </div>
+                    </div>
+                    <div class="algo-buttons">
+                        <button class="algo-btn" onclick="linearSearch()">Linear Search <span style="font-size:10px;">O(n)</span></button>
+                        <button class="algo-btn" onclick="binarySearch()">Binary Search <span style="font-size:10px;">O(log n)</span></button>
+                    </div>
+                    <div id="resultArea" class="result-area"><i class="fas fa-info-circle"></i> اضغط على أي خوارزمية لتنفيذ البحث</div>
+                    <div class="chart-container"><canvas id="complexityChart"></canvas></div>
+                </div>
+            `;
+        }
+
+        function insertAtEnd() { let val = parseInt(prompt("أدخل القيمة للإضافة:")); if (!isNaN(val)) { currentArray.push(val); showResult(`➕ تم إضافة ${val} في النهاية`); renderArray([], []); } }
+        function insertAtBeginning() { let val = parseInt(prompt("أدخل القيمة للإضافة:")); if (!isNaN(val)) { currentArray.unshift(val); showResult(`➕ تم إضافة ${val} في البداية`); renderArray([], []); } }
+        function deleteFromEnd() { if (currentArray.length === 0) { showResult("لا يوجد عناصر للحذف"); return; } let removed = currentArray.pop(); showResult(`🗑️ تم حذف ${removed} من النهاية`); renderArray([], []); }
+        function deleteFromBeginning() { if (currentArray.length === 0) { showResult("لا يوجد عناصر للحذف"); return; } let removed = currentArray.shift(); showResult(`🗑️ تم حذف ${removed} من البداية`); renderArray([], []); }
+        function resetArraySearch() { currentArray = [24, 56, 3, 89, 17, 42]; showResult(`🔄 تم إعادة تعيين المصفوفة`); renderArray([], []); }
+
+        function showInsertDeleteContent() {
+            return `
+                <div class="title-info"><p>📦 الإضافة والحذف</p><i class="fas fa-plus-circle"></i></div>
+                <div class="algo-environment">
+                    <div class="array-container">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:15px;">
+                            <span><i class="fas fa-list-ul"></i> العناصر: <span id="arrayCount" style="color:#64FFDA;">${currentArray.length}</span></span>
+                        </div>
+                        <div id="arrayDisplay" class="array-display"></div>
+                        <div class="array-input-group">
+                            <input type="text" id="arrayInput" placeholder="أدخل أرقامًا مفصولة بفاصلة">
+                            <button id="updateArrayBtn">تحديث</button>
+                            <button id="randomArrayBtn">عشوائي</button>
+                        </div>
+                    </div>
+                    <div class="algo-buttons">
+                        <button class="algo-btn" onclick="insertAtEnd()">إضافة (نهاية)</button>
+                        <button class="algo-btn" onclick="insertAtBeginning()">إضافة (بداية)</button>
+                        <button class="algo-btn" onclick="deleteFromEnd()">حذف (نهاية)</button>
+                        <button class="algo-btn" onclick="deleteFromBeginning()">حذف (بداية)</button>
+                        <button class="algo-btn" onclick="resetArraySearch()">إعادة تعيين</button>
+                    </div>
+                    <div id="resultArea" class="result-area"></div>
+                    <div class="chart-container"><canvas id="complexityChart"></canvas></div>
+                </div>
+            `;
+        }
+
+        // ===== متغيرات أبراج هانوي =====
+        let towers = [[], [], []];
+        let isAnimating = false;
+        let animationDelay = 400;
+
+        // ===== دالة حساب عرض القرص =====
+        function getDiskWidth(diskSize, maxDisk) {
+            let minWidth = 40, maxWidth = 140;
+            return minWidth + ((diskSize - 1) / (maxDisk - 1)) * (maxWidth - minWidth);
+        }
+
+        // ===== دالة رسم الأبراج (معدلة) =====
+        function drawTowers() {
+            const container = document.getElementById('hanoiVisualization');
+            if (!container) return;
+            const allDisks = [...towers[0], ...towers[1], ...towers[2]];
+            const maxDisk = allDisks.length > 0 ? Math.max(...allDisks) : 1;
+            container.innerHTML = `<div class="towers-container">${['A', 'B', 'C'].map((label, idx) => {
+                // ✅ بدون reverse: الأكبر تحت، الأصغر فوق
+                const disks = [...towers[idx]];
+                return `<div class="tower"><div class="tower-wrapper"><div class="rod-container"><div class="tower-rod"></div><div class="disks-container" style="position:absolute; bottom:12px; left:0; right:0; display:flex; flex-direction:column-reverse; align-items:center;">${disks.map(disk => `<div class="disk" style="width: ${getDiskWidth(disk, maxDisk)}px;"></div>`).join('')}</div></div><div class="tower-base"></div><div class="tower-label">العمود ${label}</div></div></div>`;
+            }).join('')}</div>`;
+        }
+
+        // ===== دالة التأخير =====
+        function sleepH(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
+
+        // ===== دالة نقل القرص =====
+        async function moveDisk(from, to) {
+            if (towers[from].length === 0) return;
+            const disk = towers[from].pop();
+            towers[to].push(disk);
+            drawTowers();
+            const moveStep = document.getElementById('moveSteps');
+            if (moveStep) {
+                const fromLabel = from === 0 ? 'A' : from === 1 ? 'B' : 'C';
+                const toLabel = to === 0 ? 'A' : to === 1 ? 'B' : 'C';
+                moveStep.innerHTML += `<div>📀 نقل قرص ${disk} من العمود ${fromLabel} إلى ${toLabel}</div>`;
+                moveStep.scrollTop = moveStep.scrollHeight;
+            }
+            await sleepH(animationDelay);
+        }
+
+        // ===== دالة الحل (Recursive) =====
+        async function solveHanoi(n, from, to, aux) {
+            if (n === 1) { await moveDisk(from, to); return; }
+            await solveHanoi(n - 1, from, aux, to);
+            await moveDisk(from, to);
+            await solveHanoi(n - 1, aux, to, from);
+        }
+
+        // ===== دالة بدء التشغيل (معدلة) =====
+        async function startHanoi() {
+            if (isAnimating) { alert("يرجى الانتظار"); return; }
+            const n = parseInt(document.getElementById('diskCount').value);
+            if (isNaN(n) || n < 1 || n > 7) { alert("الرجاء إدخال عدد الأقراص بين 1 و 7"); return; }
+            const speed = parseInt(document.getElementById('speedRange').value);
+            animationDelay = 550 - speed;
+            isAnimating = true;
+            towers = [[], [], []];
+            // ✅ من الأكبر للأصغر
+            for (let i = n; i >= 1; i--) towers[0].push(i);
+            drawTowers();
+            document.getElementById('moveSteps').innerHTML = '';
+            document.getElementById('moveCount').innerHTML = `عدد الحركات: 0`;
+            const startTime = performance.now();
+            await solveHanoi(n, 0, 2, 1);
+            const endTime = performance.now();
+            const expectedMoves = Math.pow(2, n) - 1;
+            document.getElementById('moveCount').innerHTML = `✅ عدد الحركات: ${expectedMoves} (${((endTime - startTime) / 1000).toFixed(2)} ثانية) | O(2ⁿ)`;
+            isAnimating = false;
+        }
+
+        // ===== دالة إعادة التعيين (معدلة) =====
+        function resetHanoi() {
+            if (isAnimating) return;
+            const n = parseInt(document.getElementById('diskCount').value) || 3;
+            towers = [[], [], []];
+            // ✅ من الأكبر للأصغر
+            for (let i = n; i >= 1; i--) towers[0].push(i);
+            drawTowers();
+            document.getElementByISd('moveSteps').innerHTML = '';
+            document.getElementById('moveCount').innerHTML = `عدد الحركات: 0`;
+        }
+
+        // ===== دالة عرض محتوى هانوي =====
+        function showHanoiContent() {
+            return `<div class="title-info"><p>🗼 أبراج هانوي</p><i class="fas fa-tower-cell"></i></div>
+        <div class="hanoi-visualization">
+            <div id="hanoiVisualization" style="min-height:380px;"></div>
+            <div class="hanoi-controls">
+                <div><label>📀 عدد الأقراص:</label><input type="number" id="diskCount" min="1" max="7" value="3"></div>
+                <div class="speed-control"><label>⚡ السرعة:</label><input type="range" id="speedRange" min="100" max="500" value="350"><span id="speedValue">متوسطة</span></div>
+                <button onclick="startHanoi()"><i class="fas fa-play"></i> تشغيل</button>
+                <button onclick="resetHanoi()"><i class="fas fa-sync-alt"></i> إعادة</button>
+            </div>
+            <div class="move-counter" id="moveCount">عدد الحركات: 0</div>
+            <div class="move-step" id="moveSteps"></div>
+        </div>`;
+        }
+
+        function showAlgorithmContent(type) {
+            const container = document.getElementById('dynamicContent');
+            let content = '';
+            switch (type) {
+                case 'sorting': content = showSortingContent(); break;
+                case 'search': content = showSearchContent(); break;
+                case 'insertdelete': content = showInsertDeleteContent(); break;
+                case 'hanoi': content = showHanoiContent(); break;
+                default: return;
+            }
+            container.innerHTML = content;
+            renderArray([], []);
+
+            if (type !== 'hanoi') {
+                let complexities = [], labels = [];
+                if (type === 'sorting') { complexities = [100, 70, 70, 100, 100]; labels = ['Bubble', 'Quick', 'Merge', 'Selection', 'Insertion']; }
+                else if (type === 'search') { complexities = [50, 10]; labels = ['Linear', 'Binary']; }
+                else if (type === 'insertdelete') { complexities = [1, 50, 1, 50]; labels = ['إضافة نهاية', 'إضافة بداية', 'حذف نهاية', 'حذف بداية']; }
+                updateChart(complexities, labels);
+            }
+
+            if (type !== 'hanoi') {
+                document.getElementById('updateArrayBtn')?.addEventListener('click', () => {
+                    let input = document.getElementById('arrayInput')?.value;
+                    if (input) {
+                        let newArr = input.split(',').map(n => parseInt(n.trim())).filter(n => !isNaN(n));
+                        if (newArr.length) { currentArray = newArr; renderArray([], []); showResult('تم تحديث المصفوفة'); }
+                    }
+                });
+                document.getElementById('randomArrayBtn')?.addEventListener('click', () => {
+                    currentArray = Array.from({ length: 7 }, () => Math.floor(Math.random() * 100) + 1);
+                    renderArray([], []);
+                    showResult('تم إنشاء مصفوفة عشوائية');
+                });
+
+                const speedSlider = document.getElementById('sortSpeedRange');
+                if (speedSlider) {
+                    speedSlider.addEventListener('input', (e) => {
+                        sortSpeed = parseInt(e.target.value);
+                        const speedText = document.getElementById('speedValue');
+                        if (speedText) {
+                            if (sortSpeed >= 400) speedText.innerText = 'بطيئة';
+                            else if (sortSpeed >= 250) speedText.innerText = 'متوسطة';
+                            else speedText.innerText = 'سريعة';
+                        }
+                    });
+                }
+            } else {
+                setTimeout(() => { resetHanoi(); const speedSlider = document.getElementById('speedRange'); if (speedSlider) speedSlider.addEventListener('input', (e) => { let val = parseInt(e.target.value); let speedText = document.getElementById('speedValue'); if (speedText) { if (val >= 400) speedText.innerText = 'بطيئة'; else if (val >= 250) speedText.innerText = 'متوسطة'; else speedText.innerText = 'سريعة'; } }); }, 100);
+            }
+        }
+
+        function showAlgorithmEnvironment(algoType) {
+            document.getElementById('performanceMatrixSection').style.display = 'none';
+            document.getElementById('algorithmEnvironment').style.display = 'block';
+            showAlgorithmContent(algoType);
+        }
+
+        function showHome() {
+            document.getElementById('performanceMatrixSection').style.display = 'block';
+            document.getElementById('algorithmEnvironment').style.display = 'none';
+        }
+
+        document.querySelectorAll('.menu ul li[data-algo-type]').forEach(li => {
+            li.addEventListener('click', (e) => {
+                e.preventDefault();
+                const type = li.getAttribute('data-algo-type');
+                if (type === 'home') showHome();
+                else showAlgorithmEnvironment(type);
+                document.querySelectorAll('.menu ul li').forEach(l => l.classList.remove('active'));
+                li.classList.add('active');
+            });
+        });
+
+        document.getElementById('logoutBtn')?.addEventListener('click', (e) => {
+            e.preventDefault();
+            window.close();
+            setTimeout(() => alert('لإغلاق التبويب: اضغط Ctrl+W (Windows) أو Cmd+W (Mac)'), 100);
+        });
+
+        window.bubbleSortVisual = bubbleSortVisual;
+        window.quickSortVisual = quickSortVisual;
+        window.mergeSortVisual = mergeSortVisual;
+        window.selectionSortVisual = selectionSortVisual;
+        window.insertionSortVisual = insertionSortVisual;
+        window.linearSearch = linearSearch;
+        window.binarySearch = binarySearch;
+        window.insertAtEnd = insertAtEnd;
+        window.insertAtBeginning = insertAtBeginning;
+        window.deleteFromEnd = deleteFromEnd;
+        window.deleteFromBeginning = deleteFromBeginning;
+        window.resetArraySearch = resetArraySearch;
+        window.startHanoi = startHanoi;
+        window.resetHanoi = resetHanoi;
+
+        showHome();
+    </script>
+</body>
+
+</html>
